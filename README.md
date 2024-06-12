@@ -7,7 +7,6 @@ This project allows for a Twitch user to essentially co-host the stream live. Us
 * Simple, straight forward usage
 * Easy Twitch Integration
 * Relatively small overhead
-* HTML Overlay generation
 * GUI with controls
 * Configs
 * Support for crossplatform (if built)
