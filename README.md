@@ -22,4 +22,4 @@ Put in the configs and go.
 * [TwitchLib](https://github.com/TwitchLib/TwitchLib)
 * [Avalonia UI](https://avaloniaui.net/)
 * [SpeechSynthesizer](https://www.nuget.org/packages/System.Speech)
-* [Font Icons and Logos](https://fontawesome.com/) from FontAwesome
+* Font Icons and Logos from [FontAwesome](https://fontawesome.com/)
