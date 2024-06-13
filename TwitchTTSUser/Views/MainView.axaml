@@ -55,8 +55,5 @@
         </Button>
       </DockPanel>
     </StackPanel>
-
-
-    
   </DockPanel>
 </UserControl>
