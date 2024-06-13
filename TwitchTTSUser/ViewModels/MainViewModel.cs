@@ -6,9 +6,9 @@ namespace TwitchTTSUser.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
-    public ConfigData Config { get; set; } = new();
-    public TTSService TTS => new();
-    public TwitchService Twitch { get; set; } = new();
+    public ConfigData Config { get; } = new();
+    public TwitchService Twitch { get; } = new();
+    private TTSService TTS => new();
 
     public MainViewModel() 
     {
