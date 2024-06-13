@@ -19,6 +19,9 @@ namespace TwitchTTSUser.Base
         // This is used by the TTS system to send messages
         public Action<string> MessageForwarder { private get; set; }
 
+        // This alerts other UI Objects whenever a new selected user has been made
+        public Action<string> NewSelectedUser { private get; set; }
+
         // The main storage for the users that are selected!
         public string SelectedUserName { get; private set; } = string.Empty;
         private List<string> SignedUpUsers = new List<string>();
@@ -44,6 +47,7 @@ namespace TwitchTTSUser.Base
 
             // By default write all TTS stuff to the console until something overrides it.
             MessageForwarder = s => Console.WriteLine(s);
+            NewSelectedUser = s => Console.WriteLine(s);
         }
 
         public bool IsConnected => client.IsConnected;
@@ -141,7 +145,7 @@ namespace TwitchTTSUser.Base
             SignedUpUsers.Clear();
             WriteFileData(true, string.Empty);
             WriteFileData(false, string.Empty);
-            client.SendMessage(GetChannelName(), "Signups are now open for becoming a mayor, type !signup to enter");
+            client.SendMessage(GetChannelName(), "Signups are now open! Type !signup to enter");
         }
 
         public void PickMayor(object? unused=null)
@@ -154,6 +158,7 @@ namespace TwitchTTSUser.Base
             CanSignup = false;
             SignedUpUsers.RemoveAt(RandomIndex);
             WriteFileData(true, SelectedUserName);
+            NewSelectedUser.Invoke(SelectedUserName);
             client.SendMessage(GetChannelName(), $"@{SelectedUserName} is now the new mayor!");
         }
 

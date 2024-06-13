@@ -24,7 +24,8 @@
       <TextBlock Margin="5">Chat OAuth Token: 
         <TextBox MaxLines="1" Width="200" AcceptsReturn="False" Margin="15,1" x:Name="OAuthToken" Watermark="OAuth Token" RevealPassword="False" PasswordChar="*" Text="{Binding Config.OAuthToken}"/>
       </TextBlock>
-      <Button Content="Connect" Command="{Binding ConnectButton}" Width="200" HorizontalContentAlignment="Center" HorizontalAlignment="Center" Margin="20">
+      <TextBlock x:Name="Status" HorizontalAlignment="Left" FontFamily="{StaticResource FontAwesome}" VerticalAlignment="Bottom" Text="&#xf1eb;" Padding="5,0" ToolTip.Tip="Current Connection Status" Foreground="{Binding ConnectionColor}" />
+      <Button Content="Connect" Command="{Binding ConnectButton}" Width="200" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Bottom">
         <Button.CommandParameter>
           <MultiBinding>
             <Binding ElementName="ChannelName" Path="Text" />
@@ -38,7 +39,7 @@
     <StackPanel Margin="50">
       <Border BorderBrush="AliceBlue" BorderThickness="4" Height="50">
         <TextBlock Margin="3">
-          Currently Chosen Player: <TextBox IsEnabled="True" IsHitTestVisible="False" BorderThickness="0" Margin="-5" x:Name="ChosenPlayer" IsReadOnly="True" Height="10" Text="{Binding Twitch.SelectedUserName}" Watermark="None" Width="200" />
+          Currently Chosen Player: <TextBox IsEnabled="True" FontWeight="Bold" IsHitTestVisible="False" BorderThickness="0" Margin="-5" x:Name="ChosenPlayer" IsReadOnly="True" Height="10" Text="{Binding SelectedUser, Mode=OneWay}" Watermark="None" Width="200" />
         </TextBlock>
       </Border>
       <DockPanel Margin="10">
