@@ -8,7 +8,7 @@
         MinHeight="300" MinWidth="800"
         MaxHeight="300" MaxWidth="820"
         x:Class="TwitchTTSUser.Views.MainWindow"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/wrench.ico"
         Title="Twitch User Selector"
         Topmost="True">
         <views:MainView />
