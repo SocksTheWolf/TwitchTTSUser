@@ -23,7 +23,16 @@ namespace TwitchTTSUser.Base
         public Action<string> NewSelectedUser { private get; set; }
 
         // The main storage for the users that are selected!
-        public string SelectedUserName { get; private set; } = string.Empty;
+        private string SelectedUserName
+        {
+            get { return selectedUserName; }
+            set
+            {
+                selectedUserName = value;
+                NewSelectedUser.Invoke(value);
+            }
+        }
+        private string selectedUserName = string.Empty;
         private List<string> SignedUpUsers = new List<string>();
         private bool CanSignup = false;
 
@@ -75,11 +84,12 @@ namespace TwitchTTSUser.Base
         private void OnServiceJoined(object unused, OnJoinedChannelArgs args)
         {
             client.SendMessage(args.Channel, "Connected and ready for messages!");
+            ClearUser();
         }
 
         private void OnMessageReceived(object unused, OnMessageReceivedArgs args)
         {
-            if (args.ChatMessage.Username == SelectedUserName)
+            if (args.ChatMessage.DisplayName == SelectedUserName)
             {
                 string MessageText = args.ChatMessage.Message;
 
@@ -97,7 +107,7 @@ namespace TwitchTTSUser.Base
             {
                 case "draw":
                 case "pick":
-                    if (!args.Command.ChatMessage.IsBroadcaster)
+                    if (args.Command.ChatMessage.IsBroadcaster)
                     {
                         PickMayor();
                     }
@@ -140,6 +150,9 @@ namespace TwitchTTSUser.Base
 
         public void ClearUser(object? unused=null)
         {
+            if (!client.IsConnected || CanSignup)
+                return;
+
             CanSignup = true;
             SelectedUserName = string.Empty;
             SignedUpUsers.Clear();
@@ -150,6 +163,9 @@ namespace TwitchTTSUser.Base
 
         public void PickMayor(object? unused=null)
         {
+            if (!client.IsConnected)
+                return;
+
             if (SignedUpUsers.Count == 0)
                 return;
 
@@ -158,10 +174,8 @@ namespace TwitchTTSUser.Base
             CanSignup = false;
             SignedUpUsers.RemoveAt(RandomIndex);
             WriteFileData(true, SelectedUserName);
-            NewSelectedUser.Invoke(SelectedUserName);
+            
             client.SendMessage(GetChannelName(), $"@{SelectedUserName} is now the new mayor!");
         }
-
-        public bool CanClearUser(object msg) => !string.IsNullOrEmpty(SelectedUserName);
     }
 }
