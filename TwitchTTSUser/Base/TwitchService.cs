@@ -7,7 +7,6 @@ using TwitchLib.Client.Models;
 using TwitchLib.Communication.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Client.Events;
-using System.Diagnostics;
 
 namespace TwitchTTSUser.Base
 {
