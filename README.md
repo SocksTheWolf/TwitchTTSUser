@@ -11,6 +11,12 @@ This project allows for a Twitch user to essentially co-host the stream live. Us
 * Configs
 * Support for crossplatform (if TTS interface is supported for platform)
 
+## Install
+
+You will need a chat oauth token for your bot account, which [you can get here](https://twitchapps.com/tmi/).
+
+Put in the configs and go.
+
 ## Libraries used
 
 * [TwitchLib](https://github.com/TwitchLib/TwitchLib)
