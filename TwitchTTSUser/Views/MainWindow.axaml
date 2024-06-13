@@ -9,6 +9,7 @@
         MaxHeight="400" MaxWidth="850"
         x:Class="TwitchTTSUser.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="Twitch User Selector">
+        Title="Twitch User Selector"
+        Topmost="True">
         <views:MainView />
 </Window>
