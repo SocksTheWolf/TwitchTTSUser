@@ -146,6 +146,9 @@ namespace TwitchTTSUser.Base
 
         public void PickMayor(object? unused=null)
         {
+            if (SignedUpUsers.Count == 0)
+                return;
+
             int RandomIndex = rng.Next(SignedUpUsers.Count);
             SelectedUserName = SignedUpUsers[RandomIndex];
             CanSignup = false;
