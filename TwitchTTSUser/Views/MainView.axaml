@@ -24,8 +24,7 @@
       <TextBlock Margin="5">Chat OAuth Token: 
         <TextBox MaxLines="1" Width="200" AcceptsReturn="False" Margin="15,1" x:Name="OAuthToken" Watermark="OAuth Token" RevealPassword="False" PasswordChar="*" Text="{Binding Config.OAuthToken}"/>
       </TextBlock>
-      <Button Command="{Binding ConnectButton}" HorizontalAlignment="Center" Margin="20">
-        Connect
+      <Button Content="Connect" Command="{Binding ConnectButton}" Width="200" HorizontalContentAlignment="Center" HorizontalAlignment="Center" Margin="20">
         <Button.CommandParameter>
           <MultiBinding>
             <Binding ElementName="ChannelName" Path="Text" />
@@ -43,8 +42,8 @@
         </TextBlock>
       </Border>
       <DockPanel Margin="10">
-        <Button Command="{Binding Twitch.PickMayor}">Pick User</Button>
-        <Button Command="{Binding Twitch.ClearUser}">Clear User</Button>
+        <Button Margin="10,0" Width="120" HorizontalContentAlignment="Center" Command="{Binding Twitch.PickMayor}">Pick User</Button>
+        <Button Width="120" HorizontalContentAlignment="Center" Command="{Binding Twitch.ClearUser}" Background="Red">Clear User</Button>
       </DockPanel>
     </StackPanel>
 
