@@ -7,6 +7,7 @@ using TwitchLib.Client.Models;
 using TwitchLib.Communication.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Client.Events;
+using System.Diagnostics;
 
 namespace TwitchTTSUser.Base
 {
@@ -14,6 +15,7 @@ namespace TwitchTTSUser.Base
     {
         private TwitchClient client;
         private Random rng = new Random();
+        private bool IsConnecting = false;
 
         // This is used by the TTS system to send messages
         public Action<string> MessageForwarder { private get; set; }
@@ -34,6 +36,7 @@ namespace TwitchTTSUser.Base
             WebSocketClient customClient = new WebSocketClient(clientOptions);
 
             client = new TwitchClient(customClient);
+            client.AutoReListenOnException = true;
 #pragma warning disable CS8622
             client.OnChatCommandReceived += OnCommandReceived;
             client.OnMessageReceived += OnMessageReceived;
@@ -48,15 +51,22 @@ namespace TwitchTTSUser.Base
 
         public bool ConnectToChannel(string ChannelName, string UserName, string AccessToken)
         {
-            if (client.IsInitialized)
+            if (IsConnecting)
             {
                 Console.WriteLine("Channel is already initialized!");
                 return false;
             }
 
+            IsConnecting = true;
             ConnectionCredentials creds = new ConnectionCredentials(UserName, AccessToken);
             client.Initialize(creds, ChannelName);
-            return client.Connect();
+            bool ConnectionReturn = client.Connect();
+            if (!ConnectionReturn)
+            {
+                Console.WriteLine("Could not connect to channel!");
+                IsConnecting = false;
+            }
+            return ConnectionReturn;
         }
 
         private void OnServiceJoined(object unused, OnJoinedChannelArgs args)

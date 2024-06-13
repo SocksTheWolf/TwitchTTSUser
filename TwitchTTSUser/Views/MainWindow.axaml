@@ -9,6 +9,6 @@
         MaxHeight="400" MaxWidth="850"
         x:Class="TwitchTTSUser.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="Twitch Mayor Selector">
+        Title="Twitch User Selector">
         <views:MainView />
 </Window>

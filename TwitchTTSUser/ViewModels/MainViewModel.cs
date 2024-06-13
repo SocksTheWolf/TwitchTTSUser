@@ -12,13 +12,13 @@ public class MainViewModel : ViewModelBase
 
     public MainViewModel() 
     {
-        // TODO: Config Data load
-
+        Config = ConfigData.LoadConfigData();
         Twitch.MessageForwarder = s => TTS.SayMessage(s);
     }
 
     public void ConnectButton(object msg)
     {
+        Config.SaveConfigData();
         ReadOnlyCollection<object> Type = (ReadOnlyCollection<object>)msg;
         Twitch.ConnectToChannel((string)Type[0], (string)Type[1], (string)Type[2]);
     }
