@@ -9,7 +9,7 @@ This project allows for a Twitch user to essentially co-host the stream live. Us
 * Relatively small overhead
 * GUI with controls
 * Configs
-* Support for crossplatform (if built)
+* Support for crossplatform (if TTS interface is supported for platform)
 
 ## Libraries used
 

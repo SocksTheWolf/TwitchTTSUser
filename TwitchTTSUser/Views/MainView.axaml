@@ -3,7 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:TwitchTTSUser.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="250"
+             MinHeight="250" MinWidth="600"
              x:Class="TwitchTTSUser.Views.MainView"
              x:DataType="vm:MainViewModel">
   <Design.DataContext>
@@ -11,6 +12,43 @@
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
     <vm:MainViewModel />
   </Design.DataContext>
+  <DockPanel>
+    <StackPanel Margin="5">
+      <TextBlock Text="Configs" Padding="5,10" FontWeight="ExtraBold" FontSize="30" />
+      <TextBlock Margin="5">Bot Username: 
+      <TextBox MaxLines="1" NewLine="False" Width="150" AcceptsReturn="False" Margin="42,1" x:Name="BotName" Watermark="Bot Name" Text="{Binding Config.BotUserName}"></TextBox>
+      </TextBlock>
+      <TextBlock Margin="5">Channel Name:
+        <TextBox MaxLines="1" NewLine="False" Width="150" AcceptsReturn="False" Margin="40,1" x:Name="ChannelName" Watermark="Channel Name" Text="{Binding Config.ChannelName}"/>
+      </TextBlock>
+      <TextBlock Margin="5">Chat OAuth Token: 
+        <TextBox MaxLines="1" Width="200" AcceptsReturn="False" Margin="15,1" x:Name="OAuthToken" Watermark="OAuth Token" RevealPassword="False" PasswordChar="*" Text="{Binding Config.OAuthToken}"/>
+      </TextBlock>
+      <Button Command="{Binding ConnectButton}" HorizontalAlignment="Center" Margin="20">
+        Connect
+        <Button.CommandParameter>
+          <MultiBinding>
+            <Binding ElementName="ChannelName" Path="Text" />
+            <Binding ElementName="BotName" Path="Text" />
+            <Binding ElementName="OAuthToken" Path="Text" />
+          </MultiBinding>
+        </Button.CommandParameter>
+      </Button>
+    </StackPanel>
 
-  <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <StackPanel Margin="50">
+      <Border BorderBrush="AliceBlue" BorderThickness="4" Height="50">
+        <TextBlock Margin="3">
+          Currently Chosen Player: <TextBox IsEnabled="True" IsHitTestVisible="False" BorderThickness="0" Margin="-5" x:Name="ChosenPlayer" IsReadOnly="True" Height="10" Text="{Binding Twitch.SelectedUserName}" Watermark="None" Width="200" />
+        </TextBlock>
+      </Border>
+      <DockPanel Margin="10">
+        <Button Command="{Binding Twitch.PickMayor}">Pick User</Button>
+        <Button Command="{Binding Twitch.ClearUser}">Clear User</Button>
+      </DockPanel>
+    </StackPanel>
+
+
+    
+  </DockPanel>
 </UserControl>

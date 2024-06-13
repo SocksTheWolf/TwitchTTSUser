@@ -1,6 +1,27 @@
-﻿namespace TwitchTTSUser.ViewModels;
+﻿using System.Collections.ObjectModel;
+using TwitchTTSUser.Base;
+using TwitchTTSUser.Models;
 
-public partial class MainViewModel : ViewModelBase
+namespace TwitchTTSUser.ViewModels;
+
+public class MainViewModel : ViewModelBase
 {
-    public string Greeting => "Welcome to Avalonia!";
+    public ConfigData Config { get; set; } = new();
+    public TTSService TTS => new();
+    public TwitchService Twitch { get; set; } = new();
+
+    public MainViewModel() 
+    {
+        // TODO: Config Data load
+
+        Twitch.MessageForwarder = s => TTS.SayMessage(s);
+    }
+
+    public void ConnectButton(object msg)
+    {
+        ReadOnlyCollection<object> Type = (ReadOnlyCollection<object>)msg;
+        Twitch.ConnectToChannel((string)Type[0], (string)Type[1], (string)Type[2]);
+    }
+
+    public bool CanConnectButton(object msg) => !Twitch.IsConnected;
 }
