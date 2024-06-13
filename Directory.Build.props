@@ -1,6 +1,8 @@
 <Project>
   <PropertyGroup>
     <Nullable>enable</Nullable>
+    <Authors>SocksTheWolf</Authors>
+    <Copyright>Licensed under the MIT License, see LICENSE for info/credits</Copyright>
     <AvaloniaVersion>11.0.10</AvaloniaVersion>
   </PropertyGroup>
 </Project>
