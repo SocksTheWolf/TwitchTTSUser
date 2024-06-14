@@ -94,8 +94,8 @@ namespace TwitchTTSUser.Base
                 string MessageText = args.ChatMessage.Message;
 
                 // Write to file and TTS Service
-                MessageForwarder.Invoke(MessageText);
                 WriteFileData(false, MessageText);
+                MessageForwarder.Invoke(MessageText);
             }
         }
 
@@ -112,6 +112,8 @@ namespace TwitchTTSUser.Base
                         PickMayor();
                     }
                     break;
+                case "enter":
+                case "play":
                 case "signup":
                     if (!CanSignup)
                         return;
@@ -144,7 +146,7 @@ namespace TwitchTTSUser.Base
             string FileName = (IsName) ? "username.txt" : "message.txt";
             using (StreamWriter FileWriter = File.CreateText(FileName))
             {
-                FileWriter.WriteLine(data);
+                FileWriter.WriteLineAsync(data);
             }
         }
 

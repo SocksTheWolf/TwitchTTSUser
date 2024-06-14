@@ -10,7 +10,7 @@ public partial class MainViewModel : ViewModelBase
 {
     public ConfigData Config { get; } = new();
     public TwitchService Twitch { get; } = new();
-    private TTSService TTS => new();
+    private TTSService TTS;
 
     [ObservableProperty]
     public IBrush connectionColor = Brushes.White;
@@ -20,6 +20,7 @@ public partial class MainViewModel : ViewModelBase
 
     public MainViewModel() 
     {
+        TTS = new TTSService();
         Config = ConfigData.LoadConfigData();
         Twitch.MessageForwarder = HandleMessage;
         Twitch.NewSelectedUser = HandleNewSelectedUser;
@@ -36,6 +37,7 @@ public partial class MainViewModel : ViewModelBase
     private void HandleNewSelectedUser(string NewUsername)
     {
         SelectedUser = NewUsername;
+        TTS.ChooseRandomVoiceSetting();
     }
 
     public void ConnectButton(object msg)
