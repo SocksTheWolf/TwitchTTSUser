@@ -55,7 +55,7 @@
         </Button>
       </DockPanel>
       <StackPanel Margin="5,25" HorizontalAlignment="Center">
-        <TextBlock x:Name="Clock" FontSize="48" FontWeight="Bold" Text="{Binding UserTime, Mode=OneWay}" />
+        <TextBlock x:Name="Clock" Background="Green" FontSize="48" FontWeight="Bold" Text="{Binding UserTime, Mode=OneWay}" />
       </StackPanel>
     </StackPanel>
   </DockPanel>
