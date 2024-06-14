@@ -22,7 +22,6 @@ namespace TwitchTTSUser.Base
 
             Synth = new SpeechSynthesizer();
             ChooseRandomVoiceSetting();
-            Synth.Volume = 100;
             Synth.SetOutputToDefaultAudioDevice();
         }
 
@@ -44,6 +43,14 @@ namespace TwitchTTSUser.Base
             VoiceAge SelectedAge = (VoiceAge)VoiceAges.GetValue(rng.Next(VoiceAges.Length));
             VoiceGender SelectedGender = (VoiceGender)VoiceGenders.GetValue(rng.Next(VoiceGenders.Length));
             Synth.SelectVoiceByHints(SelectedGender, SelectedAge);
+        }
+
+        public void SetVolume(int NewVolume)
+        {
+            if (Synth == null)
+                return;
+
+            Synth.Volume = NewVolume;
         }
 
         public void SayMessage(string message)

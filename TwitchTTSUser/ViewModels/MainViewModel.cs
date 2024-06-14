@@ -1,6 +1,8 @@
 ﻿using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using System.Collections.ObjectModel;
+using System.Timers;
 using TwitchTTSUser.Base;
 using TwitchTTSUser.Models;
 
@@ -12,11 +14,17 @@ public partial class MainViewModel : ViewModelBase
     public TwitchService Twitch { get; private set; }
     private TTSService TTS;
 
+    private Timer CountdownClock;
+    private int CurrentTime = 0;
+
     [ObservableProperty]
     public IBrush connectionColor = Brushes.White;
 
     [ObservableProperty]
     public string selectedUser = string.Empty;
+
+    [ObservableProperty]
+    public string userTime = string.Empty;
 
     public MainViewModel() 
     {
@@ -24,9 +32,26 @@ public partial class MainViewModel : ViewModelBase
         Twitch = new TwitchService();
         TTS = new TTSService();
 
+        // Shows a countdown clock on screen for each person's turn
+        CountdownClock = new Timer();
+        CountdownClock.Elapsed += new ElapsedEventHandler(UpdateClock);
+        CountdownClock.Interval = 1000;
+
         Config = ConfigData.LoadConfigData();
         Twitch.MessageForwarder = HandleMessage;
         Twitch.NewSelectedUser = HandleNewSelectedUser;
+        TTS.SetVolume(Config.VoiceVolume);
+    }
+
+    private void UpdateClock(object? sender, ElapsedEventArgs args)
+    {
+        // Updates the clock data.
+        --CurrentTime;
+        UserTime = TimeSpan.FromSeconds(CurrentTime).ToString();
+        if (CurrentTime <= 0)
+        {
+            CountdownClock.Stop();
+        }
     }
 
     private void HandleMessage(string IncomingMessage)
@@ -40,7 +65,18 @@ public partial class MainViewModel : ViewModelBase
     private void HandleNewSelectedUser(string NewUsername)
     {
         SelectedUser = NewUsername;
-        TTS.ChooseRandomVoiceSetting();
+        UserTime = string.Empty;
+
+        if (!string.IsNullOrEmpty(NewUsername))
+        {
+            CurrentTime = Config.MaxSelectedTime;
+            CountdownClock.Start();
+            TTS.ChooseRandomVoiceSetting();
+        }
+        else
+        {
+            CountdownClock.Stop();
+        }
     }
 
     public void ConnectButton(object msg)

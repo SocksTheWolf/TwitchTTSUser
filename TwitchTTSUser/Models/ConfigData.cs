@@ -18,6 +18,12 @@ namespace TwitchTTSUser.Models
         [JsonProperty]
         public string OAuthToken { get; set; } = string.Empty;
 
+        [JsonProperty]
+        public int MaxSelectedTime { get; set; } = 300;
+
+        [JsonProperty]
+        public int VoiceVolume { get; set; } = 100;
+
         public static ConfigData LoadConfigData()
         {
             ConfigData configData = new ConfigData();

@@ -38,8 +38,8 @@
       </DockPanel>
     </StackPanel>
 
-    <StackPanel Margin="50">
-      <Border BorderBrush="AliceBlue" BorderThickness="4" Height="50">
+    <StackPanel Margin="0,50">
+      <Border BorderBrush="AliceBlue" BorderThickness="4" Height="50" Width="395">
         <TextBlock Margin="3">
           Currently Chosen Player: <TextBox IsEnabled="True" FontWeight="Bold" IsHitTestVisible="False" BorderThickness="0" Margin="-5" x:Name="ChosenPlayer" IsReadOnly="True" Height="10" Text="{Binding SelectedUser, Mode=OneWay}" Watermark="None" Width="200" />
         </TextBlock>
@@ -54,6 +54,9 @@
           </Button.Styles>
         </Button>
       </DockPanel>
+      <StackPanel Margin="5,25" HorizontalAlignment="Center">
+        <TextBlock x:Name="Clock" FontSize="48" FontWeight="Bold" Text="{Binding UserTime, Mode=OneWay}" />
+      </StackPanel>
     </StackPanel>
   </DockPanel>
 </UserControl>
