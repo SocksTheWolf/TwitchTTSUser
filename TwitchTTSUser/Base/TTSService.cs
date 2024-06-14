@@ -23,7 +23,6 @@ namespace TwitchTTSUser.Base
             Synth = new SpeechSynthesizer();
             ChooseRandomVoiceSetting();
             Synth.Volume = 100;
-
             Synth.SetOutputToDefaultAudioDevice();
         }
 
@@ -41,7 +40,7 @@ namespace TwitchTTSUser.Base
                 return;
             }
 
-            Synth.Rate = rng.Next(-5, 5);
+            Synth.Rate = rng.Next(-3, 3);
             VoiceAge SelectedAge = (VoiceAge)VoiceAges.GetValue(rng.Next(VoiceAges.Length));
             VoiceGender SelectedGender = (VoiceGender)VoiceGenders.GetValue(rng.Next(VoiceGenders.Length));
             Synth.SelectVoiceByHints(SelectedGender, SelectedAge);
