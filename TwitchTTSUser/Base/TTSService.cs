@@ -34,13 +34,16 @@ namespace TwitchTTSUser.Base
 
             // Remove the NotSet value as a valid value
             Array VoiceAges = Enum.GetValues<VoiceAge>().Skip(1).ToArray();
-            Array VoiceGender = Enum.GetValues<VoiceGender>().Skip(1).ToArray();
-            if (VoiceAges.Length == 0 || VoiceGender.Length == 0)
+            Array VoiceGenders = Enum.GetValues<VoiceGender>().Skip(1).ToArray();
+            if (VoiceAges.Length == 0 || VoiceGenders.Length == 0)
+            {
+                Synth.SelectVoiceByHints(VoiceGender.Male, VoiceAge.Teen);
                 return;
+            }
 
             Synth.Rate = rng.Next(-5, 5);
             VoiceAge SelectedAge = (VoiceAge)VoiceAges.GetValue(rng.Next(VoiceAges.Length));
-            VoiceGender SelectedGender = (VoiceGender)VoiceGender.GetValue(rng.Next(VoiceGender.Length));
+            VoiceGender SelectedGender = (VoiceGender)VoiceGenders.GetValue(rng.Next(VoiceGenders.Length));
             Synth.SelectVoiceByHints(SelectedGender, SelectedAge);
         }
 
