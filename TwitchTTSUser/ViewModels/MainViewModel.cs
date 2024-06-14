@@ -8,8 +8,8 @@ namespace TwitchTTSUser.ViewModels;
 
 public partial class MainViewModel : ViewModelBase
 {
-    public ConfigData Config { get; } = new();
-    public TwitchService Twitch { get; } = new();
+    public ConfigData Config { get; private set; }
+    public TwitchService Twitch { get; private set; }
     private TTSService TTS;
 
     [ObservableProperty]
@@ -20,7 +20,10 @@ public partial class MainViewModel : ViewModelBase
 
     public MainViewModel() 
     {
+        Config = new ConfigData();
+        Twitch = new TwitchService();
         TTS = new TTSService();
+
         Config = ConfigData.LoadConfigData();
         Twitch.MessageForwarder = HandleMessage;
         Twitch.NewSelectedUser = HandleNewSelectedUser;
