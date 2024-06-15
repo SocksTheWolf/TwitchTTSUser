@@ -51,9 +51,10 @@ namespace TwitchTTSUser.Models
                 try
                 {
                     var outputConfig = JsonConvert.DeserializeObject<ConfigData>(json);
-                    if(outputConfig != null)
+                    if (outputConfig != null)
                     {
                         configData = outputConfig;
+                        Console.WriteLine("Settings loaded");
                     }
                 }
                 catch
