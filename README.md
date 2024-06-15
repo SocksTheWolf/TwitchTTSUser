@@ -21,5 +21,6 @@ Put in the configs and go.
 
 * [TwitchLib](https://github.com/TwitchLib/TwitchLib)
 * [Avalonia UI](https://avaloniaui.net/)
+* [Json.NET](https://www.newtonsoft.com/json)
 * [SpeechSynthesizer](https://www.nuget.org/packages/System.Speech)
 * Font Icons and Logos from [FontAwesome](https://fontawesome.com/)
