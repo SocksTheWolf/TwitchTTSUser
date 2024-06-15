@@ -43,8 +43,11 @@ namespace TwitchTTSUser.Base
             }
 
             Synth.Rate = rng.Next(-RateRange, RateRange);
+            // These already have checks above to prevent unpacking null objects.
+#pragma warning disable CS8605
             VoiceAge SelectedAge = (VoiceAge)VoiceAges.GetValue(rng.Next(VoiceAges.Length));
             VoiceGender SelectedGender = (VoiceGender)VoiceGenders.GetValue(rng.Next(VoiceGenders.Length));
+#pragma warning restore CS8605
             Synth.SelectVoiceByHints(SelectedGender, SelectedAge);
         }
 
