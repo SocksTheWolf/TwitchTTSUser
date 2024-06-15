@@ -19,10 +19,19 @@ namespace TwitchTTSUser.Models
         public string OAuthToken { get; set; } = string.Empty;
 
         [JsonProperty]
+        public string SelectedUserText { get; set; } = "has been choosen!";
+
+        [JsonProperty]
+        public string SignupsOpenText { get; set; } = "Signups are now open!";
+
+        [JsonProperty]
         public int MaxSelectedTime { get; set; } = 300;
 
         [JsonProperty]
         public int VoiceVolume { get; set; } = 100;
+
+        [JsonProperty]
+        public int VoiceRate { get; set; } = 3;
 
         [JsonProperty]
         public bool RespondToEntries { get; set; } = true;

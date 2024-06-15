@@ -11,8 +11,9 @@ namespace TwitchTTSUser.Base
     {
         private SpeechSynthesizer? Synth = null;
         private Random rng = new Random();
+        private int RateRange = 5;
 
-        public TTSService() 
+        public TTSService(int VoiceVolume, int VoiceRate) 
         {
             if (!IsSupported())
             {
@@ -21,8 +22,10 @@ namespace TwitchTTSUser.Base
             }
 
             Synth = new SpeechSynthesizer();
-            ChooseRandomVoiceSetting();
+            Synth.Volume = VoiceVolume;
+            RateRange = VoiceRate;
             Synth.SetOutputToDefaultAudioDevice();
+            ChooseRandomVoiceSetting();
         }
 
         public void ChooseRandomVoiceSetting()
@@ -39,18 +42,10 @@ namespace TwitchTTSUser.Base
                 return;
             }
 
-            Synth.Rate = rng.Next(-3, 3);
+            Synth.Rate = rng.Next(-RateRange, RateRange);
             VoiceAge SelectedAge = (VoiceAge)VoiceAges.GetValue(rng.Next(VoiceAges.Length));
             VoiceGender SelectedGender = (VoiceGender)VoiceGenders.GetValue(rng.Next(VoiceGenders.Length));
             Synth.SelectVoiceByHints(SelectedGender, SelectedAge);
-        }
-
-        public void SetVolume(int NewVolume)
-        {
-            if (Synth == null)
-                return;
-
-            Synth.Volume = NewVolume;
         }
 
         public void SayMessage(string message)

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using TwitchLib.Client;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Client.Events;
+using TwitchTTSUser.Models;
 
 namespace TwitchTTSUser.Base
 {
@@ -15,14 +16,13 @@ namespace TwitchTTSUser.Base
         private TwitchClient client;
         private Random rng = new Random();
         private bool IsConnecting = false;
-
-        public bool RespondToEntries = true;
+        private ConfigData Config;
 
         // This is used by the TTS system to send messages
-        public Action<string> MessageForwarder { private get; set; }
+        public Action<string> OnMessageSent { private get; set; }
 
         // This alerts other UI Objects whenever a new selected user has been made
-        public Action<string> NewSelectedUser { private get; set; }
+        public Action<string> OnNewSelectedUser { private get; set; }
 
         // The main storage for the users that are selected!
         private string SelectedUserName
@@ -31,15 +31,18 @@ namespace TwitchTTSUser.Base
             set
             {
                 selectedUserName = value;
-                NewSelectedUser.Invoke(value);
+                OnNewSelectedUser.Invoke(value);
             }
         }
         private string selectedUserName = string.Empty;
-        private List<string> SignedUpUsers = new List<string>();
+
+        // Current users that are signed up
+        public ObservableCollection<string> SignedUpUsers { get; private set; } = new ObservableCollection<string>();
         private bool CanSignup = false;
 
-        public TwitchService()
+        public TwitchService(ConfigData InConfig)
         {
+            Config = InConfig;
             var clientOptions = new ClientOptions
             {
                 MessagesAllowedInPeriod = 750,
@@ -57,8 +60,8 @@ namespace TwitchTTSUser.Base
 #pragma warning restore CS8622
 
             // By default write all TTS stuff to the console until something overrides it.
-            MessageForwarder = s => Console.WriteLine(s);
-            NewSelectedUser = s => Console.WriteLine(s);
+            OnMessageSent = s => Console.WriteLine(s);
+            OnNewSelectedUser = s => Console.WriteLine(s);
         }
 
         public bool IsConnected => client.IsConnected;
@@ -85,7 +88,7 @@ namespace TwitchTTSUser.Base
 
         private void OnServiceJoined(object unused, OnJoinedChannelArgs args)
         {
-            client.SendMessage(args.Channel, "Connected and ready for messages!");
+            client.SendMessage(args.Channel, "Twitch User Selector: Connected and ready for messages!");
             ClearUser();
         }
 
@@ -97,7 +100,7 @@ namespace TwitchTTSUser.Base
 
                 // Write to file and TTS Service
                 WriteFileData(false, MessageText);
-                MessageForwarder.Invoke(MessageText);
+                OnMessageSent.Invoke(MessageText);
             }
         }
 
@@ -105,32 +108,33 @@ namespace TwitchTTSUser.Base
         {
             string SenderName = args.Command.ChatMessage.DisplayName;
             string ChannelName = args.Command.ChatMessage.Channel;
-            switch (args.Command.CommandText)
+            switch (args.Command.CommandText.ToLower())
             {
                 case "draw":
                 case "pick":
                     if (args.Command.ChatMessage.IsBroadcaster)
                     {
-                        PickMayor();
-                    }
-                    break;
-                case "enter":
-                case "play":
-                case "signup":
-                    if (!CanSignup)
-                        return;
-
-                    if (!SignedUpUsers.Contains(SenderName))
-                    {
-                        SignedUpUsers.Add(SenderName);
-                        if (RespondToEntries)
-                            client.SendMessage(ChannelName, $"@{SenderName} you have entered.");
+                        PickUser();
                     }
                     break;
                 case "open":
                     if (args.Command.ChatMessage.IsBroadcaster)
                     {
                         ClearUser();
+                    }
+                    break;
+                case "enter":
+                case "play":
+                case "signup":
+                case "join":
+                    if (!CanSignup)
+                        return;
+
+                    if (!SignedUpUsers.Contains(SenderName))
+                    {
+                        SignedUpUsers.Add(SenderName);
+                        if (Config.RespondToEntries)
+                            client.SendMessage(ChannelName, $"@{SenderName} you have entered.");
                     }
                     break;
             }
@@ -163,10 +167,10 @@ namespace TwitchTTSUser.Base
             SignedUpUsers.Clear();
             WriteFileData(true, string.Empty);
             WriteFileData(false, string.Empty);
-            client.SendMessage(GetChannelName(), "Signups are now open! Type !signup to enter");
+            client.SendMessage(GetChannelName(), $"{Config.SignupsOpenText} Type !signup");
         }
 
-        public void PickMayor(object? unused=null)
+        public void PickUser(object? unused=null)
         {
             if (!client.IsConnected)
                 return;
@@ -180,7 +184,7 @@ namespace TwitchTTSUser.Base
             SignedUpUsers.RemoveAt(RandomIndex);
             WriteFileData(true, SelectedUserName);
             
-            client.SendMessage(GetChannelName(), $"@{SelectedUserName} is now the new mayor!");
+            client.SendMessage(GetChannelName(), $"@{SelectedUserName} {Config.SelectedUserText}");
         }
     }
 }

@@ -28,28 +28,25 @@ public partial class MainViewModel : ViewModelBase
 
     public MainViewModel() 
     {
-        Config = new ConfigData();
-        Twitch = new TwitchService();
-        TTS = new TTSService();
+        Config = ConfigData.LoadConfigData();
+
+        Twitch = new TwitchService(Config);
+        TTS = new TTSService(Config.VoiceVolume, Config.VoiceRate);
 
         // Shows a countdown clock on screen for each person's turn
         CountdownClock = new Timer();
         CountdownClock.Elapsed += new ElapsedEventHandler(UpdateClock);
         CountdownClock.Interval = 1000;
 
-        Config = ConfigData.LoadConfigData();
-        Twitch.MessageForwarder = HandleMessage;
-        Twitch.NewSelectedUser = HandleNewSelectedUser;
-
-        Twitch.RespondToEntries = Config.RespondToEntries;
-        TTS.SetVolume(Config.VoiceVolume);
+        Twitch.OnMessageSent = HandleMessage;
+        Twitch.OnNewSelectedUser = HandleNewSelectedUser;
     }
 
     private void UpdateClock(object? sender, ElapsedEventArgs args)
     {
         // Updates the clock data.
         --CurrentTime;
-        UserTime = TimeSpan.FromSeconds(CurrentTime).ToString();
+        UserTime = TimeSpan.FromSeconds(CurrentTime).ToString(@"mm\:ss");
         if (CurrentTime <= 0)
         {
             CountdownClock.Stop();

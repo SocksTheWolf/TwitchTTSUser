@@ -39,13 +39,21 @@
     </StackPanel>
 
     <StackPanel Margin="0,50">
+      <!-- Current Status -->
       <Border BorderBrush="AliceBlue" BorderThickness="4" Height="50" Width="395">
         <TextBlock Margin="3">
           Currently Chosen Player: <TextBox IsEnabled="True" FontWeight="Bold" IsHitTestVisible="False" BorderThickness="0" Margin="-5" x:Name="ChosenPlayer" IsReadOnly="True" Height="10" Text="{Binding SelectedUser, Mode=OneWay}" Watermark="None" Width="200" />
         </TextBlock>
       </Border>
+      
+      <!-- Number of Players -->
+      <TextBlock HorizontalAlignment="Center" Margin="20,2">
+        Number Of Users: <TextBlock x:Name="EntryCount" Text="{Binding Twitch.SignedUpUsers.Count, Mode=OneWay}" />
+      </TextBlock>
+      
+      <!-- Picker Controls -->
       <DockPanel Margin="10">
-        <Button Margin="10,0" Width="120" HorizontalContentAlignment="Center" Command="{Binding Twitch.PickMayor}">Pick User</Button>
+        <Button Margin="10,0" Width="120" HorizontalContentAlignment="Center" Command="{Binding Twitch.PickUser}">Pick User</Button>
         <Button Width="120" HorizontalContentAlignment="Center" Command="{Binding Twitch.ClearUser}" Background="Red" Content="Clear User">
           <Button.Styles>
             <Style Selector="Button:pointerover /template/ ContentPresenter">
@@ -54,9 +62,12 @@
           </Button.Styles>
         </Button>
       </DockPanel>
-      <StackPanel Margin="5,25" HorizontalAlignment="Center">
-        <TextBlock x:Name="Clock" Background="Green" FontSize="48" FontWeight="Bold" Text="{Binding UserTime, Mode=OneWay}" />
+      
+      <!-- Clock -->
+      <StackPanel Margin="5,25" HorizontalAlignment="Center" Background="Green" MinWidth="150" MinHeight="55">
+        <TextBlock x:Name="Clock" FontSize="48" FontWeight="Bold" Text="{Binding UserTime, Mode=OneWay}" />
       </StackPanel>
+      
     </StackPanel>
   </DockPanel>
 </UserControl>
