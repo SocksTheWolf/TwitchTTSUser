@@ -8,7 +8,7 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <StartupObject>TwitchTTSUser.Desktop.Program</StartupObject>
-    <ApplicationIcon>wrench.ico</ApplicationIcon>
+    <ApplicationIcon>..\TwitchTTSUser\Assets\wrench.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'" />
