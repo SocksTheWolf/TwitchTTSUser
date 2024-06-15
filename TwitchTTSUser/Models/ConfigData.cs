@@ -24,6 +24,9 @@ namespace TwitchTTSUser.Models
         [JsonProperty]
         public int VoiceVolume { get; set; } = 100;
 
+        [JsonProperty]
+        public bool RespondToEntries { get; set; } = true;
+
         public static ConfigData LoadConfigData()
         {
             ConfigData configData = new ConfigData();

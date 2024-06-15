@@ -16,6 +16,8 @@ namespace TwitchTTSUser.Base
         private Random rng = new Random();
         private bool IsConnecting = false;
 
+        public bool RespondToEntries = true;
+
         // This is used by the TTS system to send messages
         public Action<string> MessageForwarder { private get; set; }
 
@@ -121,7 +123,8 @@ namespace TwitchTTSUser.Base
                     if (!SignedUpUsers.Contains(SenderName))
                     {
                         SignedUpUsers.Add(SenderName);
-                        client.SendMessage(ChannelName, $"@{SenderName} you have entered.");
+                        if (RespondToEntries)
+                            client.SendMessage(ChannelName, $"@{SenderName} you have entered.");
                     }
                     break;
                 case "open":

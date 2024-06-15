@@ -40,6 +40,8 @@ public partial class MainViewModel : ViewModelBase
         Config = ConfigData.LoadConfigData();
         Twitch.MessageForwarder = HandleMessage;
         Twitch.NewSelectedUser = HandleNewSelectedUser;
+
+        Twitch.RespondToEntries = Config.RespondToEntries;
         TTS.SetVolume(Config.VoiceVolume);
     }
 
