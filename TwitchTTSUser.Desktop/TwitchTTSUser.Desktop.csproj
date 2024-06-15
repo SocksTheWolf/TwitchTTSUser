@@ -13,7 +13,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'" />
   <ItemGroup>
-    <Content Include="wrench.ico" />
+    <Content Include="..\TwitchTTSUser\Assets\wrench.ico" />
   </ItemGroup>
 
   <ItemGroup>
