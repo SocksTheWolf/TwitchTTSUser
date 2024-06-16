@@ -25,6 +25,9 @@ namespace TwitchTTSUser.Models
         public string SignupsOpenText { get; set; } = "Signups are now open!";
 
         [JsonProperty]
+        public bool CloseSignupsOnDraw { get; set; } = false;
+
+        [JsonProperty]
         public int MaxSelectedTime { get; set; } = 300;
 
         [JsonProperty]

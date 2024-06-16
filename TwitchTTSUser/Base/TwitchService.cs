@@ -180,7 +180,9 @@ namespace TwitchTTSUser.Base
 
             int RandomIndex = rng.Next(SignedUpUsers.Count);
             SelectedUserName = SignedUpUsers[RandomIndex];
-            CanSignup = false;
+            if (Config.CloseSignupsOnDraw)
+                CanSignup = false;
+
             SignedUpUsers.RemoveAt(RandomIndex);
             WriteFileData(true, SelectedUserName);
             
