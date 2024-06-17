@@ -28,6 +28,9 @@ namespace TwitchTTSUser.Models
         public bool CloseSignupsOnDraw { get; set; } = false;
 
         [JsonProperty]
+        public bool ChooseUserRandomly { get; set; } = true;
+
+        [JsonProperty]
         public int MaxSelectedTime { get; set; } = 300;
 
         [JsonProperty]

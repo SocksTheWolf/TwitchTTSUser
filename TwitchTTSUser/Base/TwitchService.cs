@@ -159,7 +159,7 @@ namespace TwitchTTSUser.Base
 
         public void ClearUser(object? unused=null)
         {
-            if (!client.IsConnected || CanSignup)
+            if (!client.IsConnected || (CanSignup && Config.CloseSignupsOnDraw))
                 return;
 
             CanSignup = true;
@@ -178,12 +178,16 @@ namespace TwitchTTSUser.Base
             if (SignedUpUsers.Count == 0)
                 return;
 
-            int RandomIndex = rng.Next(SignedUpUsers.Count);
-            SelectedUserName = SignedUpUsers[RandomIndex];
+            int ChooseIndex = 0;
+
+            if (Config.ChooseUserRandomly)
+                ChooseIndex = rng.Next(SignedUpUsers.Count);
+
+            SelectedUserName = SignedUpUsers[ChooseIndex];
             if (Config.CloseSignupsOnDraw)
                 CanSignup = false;
 
-            SignedUpUsers.RemoveAt(RandomIndex);
+            SignedUpUsers.RemoveAt(ChooseIndex);
             WriteFileData(true, SelectedUserName);
             
             client.SendMessage(GetChannelName(), $"@{SelectedUserName} {Config.SelectedUserText}");
