@@ -14,45 +14,61 @@
   </Design.DataContext>
   <DockPanel>
     <StackPanel Margin="5">
-      <TextBlock Text="Configs" Padding="5,10" FontWeight="ExtraBold" FontSize="30" />
-      <TextBlock Margin="5">Bot Username: 
-      <TextBox MaxLines="1" NewLine="False" Width="150" AcceptsReturn="False" Margin="42,1" x:Name="BotName" Watermark="Bot Name" Text="{Binding Config.BotUserName}"></TextBox>
-      </TextBlock>
-      <TextBlock Margin="5">Channel Name:
-        <TextBox MaxLines="1" NewLine="False" Width="150" AcceptsReturn="False" Margin="40,1" x:Name="ChannelName" Watermark="Channel Name" Text="{Binding Config.ChannelName}"/>
-      </TextBlock>
-      <TextBlock Margin="5">Chat OAuth Token: 
-        <TextBox MaxLines="1" Width="200" AcceptsReturn="False" Margin="15,1" x:Name="OAuthToken" Watermark="OAuth Token" RevealPassword="False" PasswordChar="*" Text="{Binding Config.OAuthToken}"/>
-      </TextBlock>
-      <DockPanel VerticalAlignment="Bottom" Margin="0,10">
-      <TextBlock x:Name="Status" Margin="0, 5" HorizontalAlignment="Left" FontFamily="{StaticResource FontAwesome}" Text="&#xf1eb;" Padding="50,1" ToolTip.Tip="Current Connection Status" Foreground="{Binding ConnectionColor}" />
-      <Button Content="Connect" Command="{Binding ConnectButton}" Width="200" HorizontalContentAlignment="Center" HorizontalAlignment="Center">
-        <Button.CommandParameter>
-          <MultiBinding>
-            <Binding ElementName="ChannelName" Path="Text" />
-            <Binding ElementName="BotName" Path="Text" />
-            <Binding ElementName="OAuthToken" Path="Text" />
-          </MultiBinding>
-        </Button.CommandParameter>
-      </Button>
+      <!-- Config Header -->
+      <TextBlock Text="Configs" Padding="5,10" FontWeight="ExtraBold" FontSize="30">
+        <ToolTip.Tip>
+          More configuration options can be found in config.json
+         </ToolTip.Tip>
+       </TextBlock>
+      
+      <!-- Bot Username -->
+      <DockPanel  Margin="5">
+        <Label Content="Bot Username:" Target="BotName" />
+        <TextBox MaxLines="1" NewLine="False" Width="150" AcceptsReturn="False" x:Name="BotName" Watermark="Bot Account Name" Text="{Binding Config.BotUserName}" />
+      </DockPanel>
+      
+      <!-- Channel Name -->
+      <DockPanel Margin="5">
+        <Label Content="Channel Name:" Target="ChannelName" />
+        <TextBox MaxLines="1" NewLine="False" Width="155" AcceptsReturn="False" x:Name="ChannelName" Watermark="Channel Name" Text="{Binding Config.ChannelName}"/>
+      </DockPanel>
+
+      <!-- OAuth Token -->
+      <DockPanel Margin="5">
+        <Label Content="OAuth Token:" Target="OAuthToken" />
+        <TextBox MaxLines="1" Width="200" AcceptsReturn="False" x:Name="OAuthToken" Watermark="Chat OAuth Token" RevealPassword="False" PasswordChar="*" Text="{Binding Config.OAuthToken}"/>
+      </DockPanel>
+      
+      <!-- Connection and Status -->
+      <DockPanel VerticalAlignment="Bottom" Margin="0,20">
+        <TextBlock x:Name="Status" Margin="0, 5" HorizontalAlignment="Left" FontFamily="{StaticResource FontAwesome}" Text="&#xf1eb;" Padding="50,1" ToolTip.Tip="Current Connection Status" Foreground="{Binding ConnectionColor}" />
+        <Button Content="Connect" Command="{Binding ConnectButton}" Width="200" HorizontalContentAlignment="Center" HorizontalAlignment="Center">
+          <Button.CommandParameter>
+            <MultiBinding>
+              <Binding ElementName="ChannelName" Path="Text" />
+              <Binding ElementName="BotName" Path="Text" />
+              <Binding ElementName="OAuthToken" Path="Text" />
+            </MultiBinding>
+          </Button.CommandParameter>
+        </Button>
       </DockPanel>
     </StackPanel>
 
     <StackPanel Margin="0,50">
-      <!-- Current Status -->
+      <!-- Current Chosen Player -->
       <Border BorderBrush="AliceBlue" BorderThickness="4" Height="50" Width="395">
         <TextBlock Margin="3">
           Currently Chosen Player: <TextBox IsEnabled="True" FontWeight="Bold" IsHitTestVisible="False" BorderThickness="0" Margin="-5" x:Name="ChosenPlayer" IsReadOnly="True" Height="10" Text="{Binding SelectedUser, Mode=OneWay}" Watermark="None" Width="200" />
         </TextBlock>
       </Border>
       
-      <!-- Number of Players -->
+      <!-- Number of Players in Queue -->
       <TextBlock HorizontalAlignment="Center" Margin="20,2">
         Number Of Users: <TextBlock x:Name="EntryCount" Text="{Binding Twitch.SignedUpUsers.Count, Mode=OneWay}" />
       </TextBlock>
       
       <!-- Picker Controls -->
-      <DockPanel Margin="10">
+      <DockPanel Margin="30, 10">
         <Button Margin="10,0" Width="120" HorizontalContentAlignment="Center" Command="{Binding Twitch.PickUser}">Pick User</Button>
         <Button Width="120" HorizontalContentAlignment="Center" Command="{Binding Twitch.ClearUser}" Background="Red" Content="Clear User">
           <Button.Styles>
