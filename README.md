@@ -25,4 +25,4 @@ Put in the configs and go.
 * [SpeechSynthesizer](https://www.nuget.org/packages/System.Speech)
 * [NAudio](https://github.com/naudio/NAudio)
 * Font Icons and Logos from [FontAwesome](https://fontawesome.com/)
-* Chime Sound Collection © 2024 by Deckard Holiday is licensed under [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/?ref=chooser-v1)
+* Chime Sound Collection © 2024 by [Deckard Holiday](https://github.com/DeckardHoliday) is licensed under [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/?ref=chooser-v1)
