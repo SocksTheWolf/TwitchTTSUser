@@ -62,6 +62,7 @@ namespace TwitchTTSUser.Base
             // By default write all TTS stuff to the console until something overrides it.
             OnMessageSent = s => Console.WriteLine(s);
             OnNewSelectedUser = s => Console.WriteLine(s);
+            ClearFileData();
         }
 
         public bool IsConnected => client.IsConnected;
@@ -157,6 +158,12 @@ namespace TwitchTTSUser.Base
             }
         }
 
+        private void ClearFileData()
+        {
+            WriteFileData(true, string.Empty);
+            WriteFileData(false, string.Empty);
+        }
+
         public void ClearUser(object? unused=null)
         {
             if (!client.IsConnected || (CanSignup && Config.CloseSignupsOnDraw))
@@ -165,8 +172,7 @@ namespace TwitchTTSUser.Base
             CanSignup = true;
             SelectedUserName = string.Empty;
             SignedUpUsers.Clear();
-            WriteFileData(true, string.Empty);
-            WriteFileData(false, string.Empty);
+            ClearFileData();
             client.SendMessage(GetChannelName(), $"{Config.SignupsOpenText} Type !signup");
         }
 
@@ -189,6 +195,7 @@ namespace TwitchTTSUser.Base
 
             SignedUpUsers.RemoveAt(ChooseIndex);
             WriteFileData(true, SelectedUserName);
+            WriteFileData(false, string.Empty);
             
             client.SendMessage(GetChannelName(), $"@{SelectedUserName} {Config.SelectedUserText}");
         }
