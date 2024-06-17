@@ -54,6 +54,9 @@ public partial class MainViewModel : ViewModelBase
             // Time is up!
             SFX.PlayAudio();
             CountdownClock.Stop();
+
+            if (Config.AutoChooseNextPerson)
+                Twitch.PickUser();
         }
     }
 

@@ -31,6 +31,9 @@ namespace TwitchTTSUser.Models
         public bool ChooseUserRandomly { get; set; } = true;
 
         [JsonProperty]
+        public bool AutoChooseNextPerson { get; set; } = false;
+
+        [JsonProperty]
         public int MaxSelectedTime { get; set; } = 300;
 
         [JsonProperty]
