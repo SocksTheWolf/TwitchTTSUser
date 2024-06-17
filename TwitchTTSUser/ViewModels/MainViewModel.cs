@@ -13,6 +13,7 @@ public partial class MainViewModel : ViewModelBase
     public ConfigData Config { get; private set; }
     public TwitchService Twitch { get; private set; }
     private TTSService TTS;
+    private SFXService SFX;
 
     private Timer CountdownClock;
     private int CurrentTime = 0;
@@ -30,6 +31,7 @@ public partial class MainViewModel : ViewModelBase
     {
         Config = ConfigData.LoadConfigData();
 
+        SFX = new SFXService();
         Twitch = new TwitchService(Config);
         TTS = new TTSService(Config.VoiceVolume, Config.VoiceRate);
 
@@ -49,6 +51,8 @@ public partial class MainViewModel : ViewModelBase
         UserTime = TimeSpan.FromSeconds(CurrentTime).ToString(@"mm\:ss");
         if (CurrentTime <= 0)
         {
+            // Time is up!
+            SFX.PlayAudio();
             CountdownClock.Stop();
         }
     }

@@ -24,3 +24,4 @@ Put in the configs and go.
 * [Json.NET](https://www.newtonsoft.com/json)
 * [SpeechSynthesizer](https://www.nuget.org/packages/System.Speech)
 * Font Icons and Logos from [FontAwesome](https://fontawesome.com/)
+* Chime Sound Collection © 2024 by Deckard Holiday is licensed under [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/?ref=chooser-v1)
