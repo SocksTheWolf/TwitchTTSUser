@@ -25,6 +25,12 @@ namespace TwitchTTSUser.Models
         public string SignupsOpenText { get; set; } = "Signups are now open!";
 
         [JsonProperty]
+        public string SelectedWelcomePrefix { get; set; } = "New User:";
+
+        [JsonProperty]
+        public bool ReadSelectedUserName { get; set; } = true;
+
+        [JsonProperty]
         public bool CloseSignupsOnDraw { get; set; } = false;
 
         [JsonProperty]

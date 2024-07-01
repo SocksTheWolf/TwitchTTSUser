@@ -27,6 +27,17 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     public string userTime = string.Empty;
 
+    [ObservableProperty]
+    public string timerButtonText = "Waiting...";
+
+    // Avalonia Can prefix doesn't seem to reliably update Enabled on buttons, I'm not sure why
+    // so instead bind IsEnabled to these booleans
+    [ObservableProperty]
+    public bool userSelected = false;
+
+    [ObservableProperty]
+    public bool isConnected = false; // If the user is connected to twitch (technically kind of a repeat of connectionColor)
+
     public MainViewModel() 
     {
         Config = ConfigData.LoadConfigData();
@@ -42,6 +53,7 @@ public partial class MainViewModel : ViewModelBase
 
         Twitch.OnMessageSent = HandleMessage;
         Twitch.OnNewSelectedUser = HandleNewSelectedUser;
+        Twitch.OnConnectionStatus = HandleConnectionStatus;
     }
 
     private void UpdateClock(object? sender, ElapsedEventArgs args)
@@ -56,8 +68,14 @@ public partial class MainViewModel : ViewModelBase
             CountdownClock.Stop();
 
             if (Config.AutoChooseNextPerson)
-                Twitch.PickUser();
+                Twitch.PickUser(); // If successful, will callback to HandleNewSelectedUser
         }
+    }
+
+    private void HandleConnectionStatus(bool Connected)
+    {
+        ConnectionColor = (Connected) ? Brushes.Green : Brushes.Red;
+        IsConnected = Connected;
     }
 
     private void HandleMessage(string IncomingMessage)
@@ -75,16 +93,24 @@ public partial class MainViewModel : ViewModelBase
 
         if (!string.IsNullOrEmpty(NewUsername))
         {
+            UserSelected = true;
+            TTS.ChooseRandomVoiceSetting();
+            // Read the name of the new user that was selected
+            if (Config.ReadSelectedUserName)
+                TTS.SayMessage($"{Config.SelectedWelcomePrefix}: {NewUsername}");
+
             CurrentTime = Config.MaxSelectedTime;
             CountdownClock.Start();
-            TTS.ChooseRandomVoiceSetting();
         }
         else
         {
+            UserSelected = false;
             CountdownClock.Stop();
         }
+        UpdatePauseButtonText();
     }
 
+    /*** BUTTONS ***/
     public void ConnectButton(object msg)
     {
         ConnectionColor = Brushes.White;
@@ -92,7 +118,8 @@ public partial class MainViewModel : ViewModelBase
         ReadOnlyCollection<object> Type = (ReadOnlyCollection<object>)msg;
         if (Twitch.ConnectToChannel((string)Type[0], (string)Type[1], (string)Type[2]))
         {
-            ConnectionColor = Brushes.Green;
+            // Set our state to Orange. It will tell us what further thing to do.
+            ConnectionColor = Brushes.Orange;
         }
         else
         {
@@ -100,5 +127,19 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
-    public bool CanConnectButton(object msg) => !Twitch.IsConnected;
+    // Pause Button
+    public void TogglePauseButton(object msg)
+    {
+        if (CountdownClock.Enabled)
+            CountdownClock.Stop();
+        else
+            CountdownClock.Start();
+
+        UpdatePauseButtonText();
+    }
+
+    public void UpdatePauseButtonText()
+    {
+        TimerButtonText = (this.CountdownClock.Enabled ? "Pause" : "Resume") + " Timer";
+    }
 }

@@ -42,7 +42,7 @@
       <!-- Connection and Status -->
       <DockPanel VerticalAlignment="Bottom" Margin="0,20">
         <TextBlock x:Name="Status" Margin="0, 5" HorizontalAlignment="Left" FontFamily="{StaticResource FontAwesome}" Text="&#xf1eb;" Padding="50,1" ToolTip.Tip="Current Connection Status" Foreground="{Binding ConnectionColor}" />
-        <Button Content="Connect" Command="{Binding ConnectButton}" Width="200" HorizontalContentAlignment="Center" HorizontalAlignment="Center">
+        <Button Content="Connect" IsEnabled="{Binding !IsConnected}" Command="{Binding ConnectButton}" Width="200" HorizontalContentAlignment="Center" HorizontalAlignment="Center">
           <Button.CommandParameter>
             <MultiBinding>
               <Binding ElementName="ChannelName" Path="Text" />
@@ -69,8 +69,9 @@
       
       <!-- Picker Controls -->
       <DockPanel Margin="30, 10">
-        <Button Margin="10,0" Width="120" HorizontalContentAlignment="Center" Command="{Binding Twitch.PickUser}">Pick User</Button>
-        <Button Width="120" HorizontalContentAlignment="Center" Command="{Binding Twitch.ClearUser}" Background="Red" Content="Clear User">
+        <Button Margin="10,0" Width="120" HorizontalContentAlignment="Center" Command="{Binding Twitch.PickUser}" IsEnabled="{Binding IsConnected}">Pick New User</Button>
+        <Button Margin="-3,0,5,0" Width="120" IsEnabled="{Binding UserSelected}" HorizontalContentAlignment="Center" Command="{Binding TogglePauseButton}" Content="{Binding TimerButtonText}" />
+        <Button Width="140" HorizontalContentAlignment="Center" Command="{Binding Twitch.ClearUser}" Background="Red" Content="Clear User Queue" IsEnabled="{Binding IsConnected}">
           <Button.Styles>
             <Style Selector="Button:pointerover /template/ ContentPresenter">
               <Setter Property="Background" Value="DarkRed" />
