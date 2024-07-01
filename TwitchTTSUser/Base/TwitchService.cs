@@ -47,29 +47,6 @@ namespace TwitchTTSUser.Base
         public TwitchService(ConfigData InConfig)
         {
             Config = InConfig;
-            InitializeTwitchClient();
-
-            // By default write all Actions to console until something overrides.
-            OnMessageSent = s => Console.WriteLine(s);
-            OnNewSelectedUser = s => Console.WriteLine(s);
-            OnConnectionStatus = s => Console.WriteLine(s);
-            ClearFileData();
-        }
-
-        private void InitializeTwitchClient()
-        {
-#pragma warning disable CS8622
-            // We will get callbacks for dead clients because of timeouts.
-            // Remove those before re-creating the TwitchClient object (we cannot reuse this object cleanly otherwise)
-            if (client != null)
-            {
-                client.OnConnectionError -= OnConnectionError;
-                client.OnIncorrectLogin -= OnIncorrectLogin;
-                client.OnChatCommandReceived -= OnCommandReceived;
-                client.OnMessageReceived -= OnMessageReceived;
-                client.OnJoinedChannel -= OnServiceJoined;
-            }
-
             var clientOptions = new ClientOptions
             {
                 MessagesAllowedInPeriod = 750,
@@ -79,14 +56,17 @@ namespace TwitchTTSUser.Base
             WebSocketClient customClient = new WebSocketClient(clientOptions);
 
             client = new TwitchClient(customClient);
-            client.AutoReListenOnException = false;
-
-            client.OnConnectionError += OnConnectionError;
-            client.OnIncorrectLogin += OnIncorrectLogin;
+            client.AutoReListenOnException = true;
+#pragma warning disable CS8622
             client.OnChatCommandReceived += OnCommandReceived;
             client.OnMessageReceived += OnMessageReceived;
             client.OnJoinedChannel += OnServiceJoined;
 #pragma warning restore CS8622
+
+            // Set up basic redirects to the console
+            OnNewSelectedUser = OnMessageSent = s => Console.WriteLine(s);
+            OnConnectionStatus = s => Console.WriteLine(s);
+            ClearFileData();
         }
 
         public bool ConnectToChannel(string ChannelName, string UserName, string AccessToken)
@@ -100,39 +80,21 @@ namespace TwitchTTSUser.Base
 
             IsConnecting = true;
             ConnectionCredentials creds = new ConnectionCredentials(UserName, AccessToken);
-            client.Initialize(creds);
-
+            client.Initialize(creds, ChannelName);
             bool ConnectionReturn = client.Connect();
             if (!ConnectionReturn)
             {
                 Console.WriteLine("Could not connect to channel!");
-                IsConnecting = false;
                 OnConnectionStatus.Invoke(false);
-            }
-            else
-            {
-                client.JoinChannel(ChannelName);
+                IsConnecting = false;
             }
             return ConnectionReturn;
         }
 
-        private void ResetConnectionState()
-        {
-            if (!IsConnecting)
-                return;
-
-            IsConnecting = false;
-            InitializeTwitchClient();
-            OnConnectionStatus.Invoke(false);
-        }
-
-        private void OnIncorrectLogin(object unused, OnIncorrectLoginArgs args) => ResetConnectionState();
-        private void OnConnectionError(object unused, OnConnectionErrorArgs args) => ResetConnectionState();
-
         private void OnServiceJoined(object unused, OnJoinedChannelArgs args)
         {
-            OnConnectionStatus.Invoke(true);
             client.SendMessage(args.Channel, "Twitch User Selector: Connected and ready for messages!");
+            OnConnectionStatus.Invoke(true);
             ClearUser();
         }
 
@@ -184,16 +146,7 @@ namespace TwitchTTSUser.Base
             }
         }
 
-        private string GetChannelName()
-        {
-            if (!client.IsConnected)
-                return string.Empty;
-
-            if (client.JoinedChannels.Count == 0)
-                return Config.ChannelName;
-
-            return client.JoinedChannels.First().Channel;
-        }
+        private string GetChannelName() => Config.ChannelName.ToLower();
 
         private void WriteFileData(bool IsName, string data)
         {
@@ -210,7 +163,7 @@ namespace TwitchTTSUser.Base
             WriteFileData(false, string.Empty);
         }
 
-        public void ClearUser(object? unused=null)
+        public void ClearUser(object? unused = null)
         {
             if (!client.IsConnected || (CanSignup && Config.CloseSignupsOnDraw))
                 return;
@@ -222,7 +175,7 @@ namespace TwitchTTSUser.Base
             client.SendMessage(GetChannelName(), $"{Config.SignupsOpenText} Type !signup");
         }
 
-        public void PickUser(object? unused=null)
+        public void PickUser(object? unused = null)
         {
             if (!client.IsConnected)
                 return;
@@ -242,7 +195,7 @@ namespace TwitchTTSUser.Base
             SignedUpUsers.RemoveAt(ChooseIndex);
             WriteFileData(true, SelectedUserName);
             WriteFileData(false, string.Empty);
-            
+
             client.SendMessage(GetChannelName(), $"@{SelectedUserName} {Config.SelectedUserText}");
         }
     }
