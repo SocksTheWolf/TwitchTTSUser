@@ -2,7 +2,7 @@
 using NAudio.Wave;
 using System;
 
-namespace TwitchTTSUser.Base
+namespace TwitchTTSUser.Models
 {
     public class SFXService
     {
@@ -10,8 +10,8 @@ namespace TwitchTTSUser.Base
         private WaveFileReader audioFile;
         private bool AudioPlaying = false;
 
-        public SFXService() 
-        { 
+        public SFXService()
+        {
             output = new WaveOutEvent();
             output.PlaybackStopped += OnStoppedAudio;
 

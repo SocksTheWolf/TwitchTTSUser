@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Timers;
-using TwitchTTSUser.Base;
 using TwitchTTSUser.Models;
 
 namespace TwitchTTSUser.ViewModels;

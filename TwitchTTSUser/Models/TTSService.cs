@@ -3,9 +3,8 @@ using System.Threading;
 using System.Speech.Synthesis;
 using System.Runtime.InteropServices;
 using System.Linq;
-using TwitchTTSUser.Models;
 
-namespace TwitchTTSUser.Base
+namespace TwitchTTSUser.Models
 {
 #pragma warning disable CA1416 // Validate platform compatibility
     public class TTSService
@@ -14,7 +13,7 @@ namespace TwitchTTSUser.Base
         private Random rng = new Random();
         private ConfigData Config;
 
-        public TTSService(ConfigData InConfig) 
+        public TTSService(ConfigData InConfig)
         {
             Config = InConfig;
             if (!IsSupported())

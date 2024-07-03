@@ -5,9 +5,8 @@ using TwitchLib.Client.Models;
 using TwitchLib.Communication.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Client.Events;
-using TwitchTTSUser.Models;
 
-namespace TwitchTTSUser.Base
+namespace TwitchTTSUser.Models
 {
     public class TwitchService
     {
@@ -152,7 +151,7 @@ namespace TwitchTTSUser.Base
 
         public void ClearUser()
         {
-            if (!client.IsConnected || (CanSignup && Config.CloseSignupsOnDraw))
+            if (!client.IsConnected || CanSignup && Config.CloseSignupsOnDraw)
                 return;
 
             CanSignup = true;
