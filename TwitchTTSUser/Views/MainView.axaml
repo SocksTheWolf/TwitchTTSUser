@@ -41,16 +41,8 @@
       
       <!-- Connection and Status -->
       <DockPanel VerticalAlignment="Bottom" Margin="0,20">
-        <TextBlock x:Name="Status" Margin="0, 5" HorizontalAlignment="Left" FontFamily="{StaticResource FontAwesome}" Text="&#xf1eb;" Padding="50,1" ToolTip.Tip="Current Connection Status" Foreground="{Binding ConnectionColor}" />
-        <Button Content="Connect" IsEnabled="{Binding !IsConnected}" Command="{Binding ConnectButton}" Width="200" HorizontalContentAlignment="Center" HorizontalAlignment="Center">
-          <Button.CommandParameter>
-            <MultiBinding>
-              <Binding ElementName="ChannelName" Path="Text" />
-              <Binding ElementName="BotName" Path="Text" />
-              <Binding ElementName="OAuthToken" Path="Text" />
-            </MultiBinding>
-          </Button.CommandParameter>
-        </Button>
+        <TextBlock x:Name="Status" Margin="0, 5" HorizontalAlignment="Left" FontFamily="{StaticResource FontAwesome}" Text="&#xf1eb;" Padding="50,1" ToolTip.Tip="{Binding ConnectionStatus}" Foreground="{Binding ConnectionColor}" />
+        <Button Content="Connect" IsEnabled="{Binding !IsConnected}" Command="{Binding ConnectButton}" Width="200" HorizontalContentAlignment="Center" HorizontalAlignment="Center" />
       </DockPanel>
     </StackPanel>
 
@@ -69,9 +61,9 @@
       
       <!-- Picker Controls -->
       <DockPanel Margin="30, 10">
-        <Button Margin="10,0" Width="120" HorizontalContentAlignment="Center" Command="{Binding Twitch.PickUser}" IsEnabled="{Binding IsConnected}">Pick New User</Button>
+        <Button Margin="10,0" Width="120" HorizontalContentAlignment="Center" Command="{Binding PickUserButton}" IsEnabled="{Binding IsConnected}">Pick New User</Button>
         <Button Margin="-3,0,5,0" Width="120" IsEnabled="{Binding UserSelected}" HorizontalContentAlignment="Center" Command="{Binding TogglePauseButton}" Content="{Binding TimerButtonText}" />
-        <Button Width="140" HorizontalContentAlignment="Center" Command="{Binding Twitch.ClearUser}" Background="Red" Content="Clear User Queue" IsEnabled="{Binding IsConnected}">
+        <Button Width="140" HorizontalContentAlignment="Center" Command="{Binding ClearUserButton}" Background="Red" Content="Clear User Queue" IsEnabled="{Binding IsConnected}">
           <Button.Styles>
             <Style Selector="Button:pointerover /template/ ContentPresenter">
               <Setter Property="Background" Value="DarkRed" />

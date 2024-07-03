@@ -1,7 +1,6 @@
 ﻿using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System;
-using System.Collections.ObjectModel;
 using System.Timers;
 using TwitchTTSUser.Base;
 using TwitchTTSUser.Models;
@@ -14,12 +13,16 @@ public partial class MainViewModel : ViewModelBase
     public TwitchService Twitch { get; private set; }
     private TTSService TTS;
     private SFXService SFX;
+    private FileWriter OBSTextData;
 
     private Timer CountdownClock;
     private int CurrentTime = 0;
 
     [ObservableProperty]
     public IBrush connectionColor = Brushes.White;
+
+    [ObservableProperty]
+    public string connectionStatus = "Disconnected";
 
     [ObservableProperty]
     public string selectedUser = string.Empty;
@@ -43,19 +46,21 @@ public partial class MainViewModel : ViewModelBase
         Config = ConfigData.LoadConfigData();
 
         SFX = new SFXService();
+        OBSTextData = new FileWriter();
         Twitch = new TwitchService(Config);
-        TTS = new TTSService(Config.VoiceVolume, Config.VoiceRate);
+        TTS = new TTSService(Config);
 
         // Shows a countdown clock on screen for each person's turn
         CountdownClock = new Timer();
         CountdownClock.Elapsed += new ElapsedEventHandler(UpdateClock);
         CountdownClock.Interval = 1000;
 
-        Twitch.OnMessageSent = HandleMessage;
+        Twitch.OnMessageSent = HandleUserMessage;
         Twitch.OnNewSelectedUser = HandleNewSelectedUser;
         Twitch.OnConnectionStatus = HandleConnectionStatus;
     }
 
+    /*** CLOCK ***/
     private void UpdateClock(object? sender, ElapsedEventArgs args)
     {
         // Updates the clock data.
@@ -66,38 +71,45 @@ public partial class MainViewModel : ViewModelBase
             // Time is up!
             SFX.PlayAudio();
             CountdownClock.Stop();
+            CurrentTime = 0;
 
             if (Config.AutoChooseNextPerson)
                 Twitch.PickUser(); // If successful, will callback to HandleNewSelectedUser
         }
     }
 
+    private bool IsClockRunning() => CountdownClock.Enabled;
+
+    /*** IO FUNCTIONALITY ***/
+    private void HandleUserMessage(string IncomingMessage)
+    {
+        if (Config.InteractOnlyIfClockRunning && !IsClockRunning())
+            return;
+
+        OBSTextData.WriteMessage(IncomingMessage);
+        TTS.SayMessage(IncomingMessage);
+    }
+
+    /*** MAIN LOGIC ***/
     private void HandleConnectionStatus(bool Connected)
     {
         ConnectionColor = (Connected) ? Brushes.Green : Brushes.Red;
+        ConnectionStatus = (Connected) ? "Connected!" : "Connection Error!";
         IsConnected = Connected;
-    }
-
-    private void HandleMessage(string IncomingMessage)
-    {
-        if (!string.IsNullOrEmpty(IncomingMessage))
-        {
-            TTS.SayMessage(IncomingMessage);
-        }
     }
 
     private void HandleNewSelectedUser(string NewUsername)
     {
         SelectedUser = NewUsername;
         UserTime = string.Empty;
+        OBSTextData.WriteMessage(string.Empty);
+        OBSTextData.WriteUsername(NewUsername);
 
         if (!string.IsNullOrEmpty(NewUsername))
         {
             UserSelected = true;
             TTS.ChooseRandomVoiceSetting();
-            // Read the name of the new user that was selected
-            if (Config.ReadSelectedUserName)
-                TTS.SayMessage($"{Config.SelectedWelcomePrefix}: {NewUsername}");
+            TTS.SayUsername(NewUsername);
 
             CurrentTime = Config.MaxSelectedTime;
             CountdownClock.Start();
@@ -115,15 +127,16 @@ public partial class MainViewModel : ViewModelBase
     {
         ConnectionColor = Brushes.White;
         Config.SaveConfigData();
-        ReadOnlyCollection<object> Type = (ReadOnlyCollection<object>)msg;
-        if (Twitch.ConnectToChannel((string)Type[0], (string)Type[1], (string)Type[2]))
+        if (Twitch.ConnectToChannel())
         {
             // Set our state to Orange. It will tell us what further thing to do.
             ConnectionColor = Brushes.Orange;
+            ConnectionStatus = "Connecting...";
         }
         else
         {
             ConnectionColor = Brushes.Red;
+            ConnectionStatus = "Connection Error!";
         }
     }
 
@@ -140,6 +153,19 @@ public partial class MainViewModel : ViewModelBase
 
     public void UpdatePauseButtonText()
     {
-        TimerButtonText = (this.CountdownClock.Enabled ? "Pause" : "Resume") + " Timer";
+        TimerButtonText = (IsClockRunning() ? "Pause" : "Resume") + " Timer";
+    }
+
+    // Clear User Queue Button
+    public void ClearUserButton(object msg)
+    {
+        OBSTextData.ClearFiles();
+        Twitch.ClearUser();
+    }
+
+    // Pick User Button
+    public void PickUserButton(object msg)
+    {
+        Twitch.PickUser();
     }
 }

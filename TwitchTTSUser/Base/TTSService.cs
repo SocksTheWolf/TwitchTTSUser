@@ -3,6 +3,7 @@ using System.Threading;
 using System.Speech.Synthesis;
 using System.Runtime.InteropServices;
 using System.Linq;
+using TwitchTTSUser.Models;
 
 namespace TwitchTTSUser.Base
 {
@@ -11,10 +12,11 @@ namespace TwitchTTSUser.Base
     {
         private SpeechSynthesizer? Synth = null;
         private Random rng = new Random();
-        private int RateRange = 5;
+        private ConfigData Config;
 
-        public TTSService(int VoiceVolume, int VoiceRate) 
+        public TTSService(ConfigData InConfig) 
         {
+            Config = InConfig;
             if (!IsSupported())
             {
                 Console.WriteLine("Speech Synthesis is not available on this platform!");
@@ -22,8 +24,7 @@ namespace TwitchTTSUser.Base
             }
 
             Synth = new SpeechSynthesizer();
-            Synth.Volume = VoiceVolume;
-            RateRange = VoiceRate;
+            Synth.Volume = Config.VoiceVolume;
             Synth.SetOutputToDefaultAudioDevice();
             ChooseRandomVoiceSetting();
         }
@@ -42,7 +43,7 @@ namespace TwitchTTSUser.Base
                 return;
             }
 
-            Synth.Rate = rng.Next(-RateRange, RateRange);
+            Synth.Rate = rng.Next(-Config.VoiceRateBounds, Config.VoiceRateBounds);
             // These already have checks above to prevent unpacking null objects.
 #pragma warning disable CS8605
             VoiceAge SelectedAge = (VoiceAge)VoiceAges.GetValue(rng.Next(VoiceAges.Length));
@@ -51,14 +52,28 @@ namespace TwitchTTSUser.Base
             Synth.SelectVoiceByHints(SelectedGender, SelectedAge);
         }
 
-        public void SayMessage(string message)
+        public void SayUsername(string NewUsername)
         {
+            // Read the name of the new user that was selected
+            if (Config.ReadSelectedUserName)
+                SayMessageRaw($"{Config.SelectedWelcomePrefix}: {NewUsername}", false);
+        }
+        public void SayMessage(string message) => SayMessageRaw(message, true);
+
+        private void SayMessageRaw(string Message, bool ShouldDelay)
+        {
+            if (string.IsNullOrWhiteSpace(Message))
+                return;
+
             if (Synth != null)
             {
-                string truncatedMessage = message.Substring(0, Math.Min(message.Length, 400));
-                // Arbitrary delay added so that the file data will show up in OBS properly
-                // Before the TTS is said.
-                Thread.Sleep(2000);
+                string truncatedMessage = Message.Substring(0, Math.Min(Message.Length, Config.TTSMaxCharacterLimit));
+                if (ShouldDelay)
+                {
+                    // Arbitrary delay added so that the file data will show up in OBS properly
+                    // Before the TTS is said.
+                    Thread.Sleep(2000);
+                }
 
                 Synth.SpeakAsync(truncatedMessage);
             }

@@ -35,7 +35,6 @@ namespace TwitchTTSUser.Base
             AudioPlaying = true;
         }
 
-
         private void OnStoppedAudio(object? sender, StoppedEventArgs args)
         {
             audioFile.Position = 0;

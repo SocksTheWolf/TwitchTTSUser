@@ -1,7 +1,5 @@
 ﻿using System;
-using System.IO;
 using System.Collections.ObjectModel;
-using System.Linq;
 using TwitchLib.Client;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Models;
@@ -19,14 +17,14 @@ namespace TwitchTTSUser.Base
         private ConfigData Config;
 
         // This is used by the TTS system to send messages
-        public Action<string> OnMessageSent { private get; set; }
+        public Action<string>? OnMessageSent { private get; set; }
 
         // This alerts other UI Objects whenever a new selected user has been made
-        public Action<string> OnNewSelectedUser { private get; set; }
+        public Action<string>? OnNewSelectedUser { private get; set; }
 
         // This alerts on the service connection state, including issues that need to be resolved.
         // arg is true if everything is fine, false otherwise
-        public Action<bool> OnConnectionStatus { private get; set; }
+        public Action<bool>? OnConnectionStatus { private get; set; }
 
         // The main storage for the users that are selected!
         private string SelectedUserName
@@ -35,7 +33,8 @@ namespace TwitchTTSUser.Base
             set
             {
                 selectedUserName = value;
-                OnNewSelectedUser.Invoke(value);
+                if (OnNewSelectedUser != null)
+                    OnNewSelectedUser.Invoke(value);
             }
         }
         private string selectedUserName = string.Empty;
@@ -62,30 +61,27 @@ namespace TwitchTTSUser.Base
             client.OnMessageReceived += OnMessageReceived;
             client.OnJoinedChannel += OnServiceJoined;
 #pragma warning restore CS8622
-
-            // Set up basic redirects to the console
-            OnNewSelectedUser = OnMessageSent = s => Console.WriteLine(s);
-            OnConnectionStatus = s => Console.WriteLine(s);
-            ClearFileData();
         }
 
-        public bool ConnectToChannel(string ChannelName, string UserName, string AccessToken)
+        public bool ConnectToChannel()
         {
             if (IsConnecting)
             {
                 Console.WriteLine("Channel is already initialized!");
-                OnConnectionStatus.Invoke(false);
+                if (OnConnectionStatus != null)
+                    OnConnectionStatus.Invoke(false);
                 return false;
             }
 
             IsConnecting = true;
-            ConnectionCredentials creds = new ConnectionCredentials(UserName, AccessToken);
-            client.Initialize(creds, ChannelName);
+            ConnectionCredentials creds = new ConnectionCredentials(Config.BotUserName, Config.OAuthToken);
+            client.Initialize(creds, Config.ChannelName);
             bool ConnectionReturn = client.Connect();
             if (!ConnectionReturn)
             {
                 Console.WriteLine("Could not connect to channel!");
-                OnConnectionStatus.Invoke(false);
+                if (OnConnectionStatus != null)
+                    OnConnectionStatus.Invoke(false);
                 IsConnecting = false;
             }
             return ConnectionReturn;
@@ -94,7 +90,8 @@ namespace TwitchTTSUser.Base
         private void OnServiceJoined(object unused, OnJoinedChannelArgs args)
         {
             client.SendMessage(args.Channel, "Twitch User Selector: Connected and ready for messages!");
-            OnConnectionStatus.Invoke(true);
+            if (OnConnectionStatus != null)
+                OnConnectionStatus.Invoke(true);
             ClearUser();
         }
 
@@ -103,18 +100,17 @@ namespace TwitchTTSUser.Base
             if (args.ChatMessage.DisplayName == SelectedUserName)
             {
                 string MessageText = args.ChatMessage.Message;
-
-                // Write to file and TTS Service
-                WriteFileData(false, MessageText);
-                OnMessageSent.Invoke(MessageText);
+                if (OnMessageSent != null)
+                    OnMessageSent.Invoke(MessageText);
             }
         }
 
         private void OnCommandReceived(object unused, OnChatCommandReceivedArgs args)
         {
-            string SenderName = args.Command.ChatMessage.DisplayName;
-            string ChannelName = args.Command.ChatMessage.Channel;
-            switch (args.Command.CommandText.ToLower())
+            string CommandValue = args.Command.CommandText.ToLower();
+
+            // Check Admin Commands
+            switch (CommandValue)
             {
                 case "draw":
                 case "pick":
@@ -129,41 +125,32 @@ namespace TwitchTTSUser.Base
                         ClearUser();
                     }
                     break;
-                case "enter":
-                case "play":
-                case "signup":
-                case "join":
-                    if (!CanSignup)
-                        return;
+            }
 
-                    if (!SignedUpUsers.Contains(SenderName))
-                    {
-                        SignedUpUsers.Add(SenderName);
-                        if (Config.RespondToEntries)
-                            client.SendMessage(ChannelName, $"@{SenderName} you have entered.");
-                    }
-                    break;
+            // Do a quick Exists check to see if the command exists in the array of command values.
+            // If it does not, then this command was not for us.
+            if (Config.IsValid && Array.Exists(Config.EntryCommands, element => element == CommandValue))
+            {
+                if (!CanSignup)
+                    return;
+
+                string SenderName = args.Command.ChatMessage.DisplayName;
+                // Check to see if we can add the user (isn't already in the array)
+                if (!SignedUpUsers.Contains(SenderName))
+                {
+                    // Add the user to the array.
+                    SignedUpUsers.Add(SenderName);
+
+                    // If we should send a message in chat, do so, by @ responding to said user.
+                    if (Config.RespondToEntries)
+                        client.SendMessage(args.Command.ChatMessage.Channel, $"@{SenderName} you have entered.");
+                }
             }
         }
 
         private string GetChannelName() => Config.ChannelName.ToLower();
 
-        private void WriteFileData(bool IsName, string data)
-        {
-            string FileName = (IsName) ? "username.txt" : "message.txt";
-            using (StreamWriter FileWriter = File.CreateText(FileName))
-            {
-                FileWriter.WriteLineAsync(data);
-            }
-        }
-
-        private void ClearFileData()
-        {
-            WriteFileData(true, string.Empty);
-            WriteFileData(false, string.Empty);
-        }
-
-        public void ClearUser(object? unused = null)
+        public void ClearUser()
         {
             if (!client.IsConnected || (CanSignup && Config.CloseSignupsOnDraw))
                 return;
@@ -171,11 +158,13 @@ namespace TwitchTTSUser.Base
             CanSignup = true;
             SelectedUserName = string.Empty;
             SignedUpUsers.Clear();
-            ClearFileData();
-            client.SendMessage(GetChannelName(), $"{Config.SignupsOpenText} Type !signup");
+
+            // Check to see if we have any entry commands (we should have a few defaults)
+            if (Config.EntryCommands.Length >= 1)
+                client.SendMessage(GetChannelName(), $"{Config.SignupsOpenText} Type !{Config.EntryCommands[0]}");
         }
 
-        public void PickUser(object? unused = null)
+        public void PickUser()
         {
             if (!client.IsConnected)
                 return;
@@ -193,9 +182,6 @@ namespace TwitchTTSUser.Base
                 CanSignup = false;
 
             SignedUpUsers.RemoveAt(ChooseIndex);
-            WriteFileData(true, SelectedUserName);
-            WriteFileData(false, string.Empty);
-
             client.SendMessage(GetChannelName(), $"@{SelectedUserName} {Config.SelectedUserText}");
         }
     }

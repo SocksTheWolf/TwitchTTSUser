@@ -81,6 +81,10 @@ namespace TwitchTTSUser.Models
             set { Internal_VoiceRateBounds = Math.Clamp(value, 0, 10); }
         }
 
+        // Max character limit for TTS. The message will be truncated to this size if it's larger than it.
+        [JsonProperty]
+        public int TTSMaxCharacterLimit { get; set; } = 400;
+
         // If the bot should respond in chat whenever someone enters.
         [JsonProperty]
         public bool RespondToEntries { get; set; } = true;
