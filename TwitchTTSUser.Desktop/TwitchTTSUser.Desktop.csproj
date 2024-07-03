@@ -9,9 +9,13 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <StartupObject>TwitchTTSUser.Desktop.Program</StartupObject>
     <ApplicationIcon>..\TwitchTTSUser\Assets\wrench.ico</ApplicationIcon>
+    <RepositoryUrl>https://github.com/SocksTheWolf/TwitchTTSUser</RepositoryUrl>
+    <AssemblyName>TwitchTTSUserApp</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
   <ItemGroup>
     <Content Include="..\TwitchTTSUser\Assets\wrench.ico" />
   </ItemGroup>
