@@ -85,8 +85,9 @@ public partial class MainViewModel : ViewModelBase
         if (Config.InteractOnlyIfClockRunning && !IsClockRunning())
             return;
 
-        OBSTextData.WriteMessage(IncomingMessage);
-        TTS.SayMessage(IncomingMessage);
+        string truncatedMessage = IncomingMessage.Substring(0, Math.Min(IncomingMessage.Length, Config.MaxMessageSize));
+        OBSTextData.WriteMessage(truncatedMessage);
+        TTS.SayMessage(truncatedMessage);
     }
 
     /*** MAIN LOGIC ***/

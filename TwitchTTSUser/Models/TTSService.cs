@@ -66,7 +66,7 @@ namespace TwitchTTSUser.Models
 
             if (Synth != null)
             {
-                string truncatedMessage = Message.Substring(0, Math.Min(Message.Length, Config.TTSMaxCharacterLimit));
+                
                 if (ShouldDelay)
                 {
                     // Arbitrary delay added so that the file data will show up in OBS properly
@@ -74,7 +74,7 @@ namespace TwitchTTSUser.Models
                     Thread.Sleep(2000);
                 }
 
-                Synth.SpeakAsync(truncatedMessage);
+                Synth.SpeakAsync(Message);
             }
         }
 
