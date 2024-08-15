@@ -3,6 +3,5 @@
     <Nullable>enable</Nullable>
     <Authors>SocksTheWolf</Authors>
     <Copyright>Licensed under the MIT License, see LICENSE for info/credits</Copyright>
-    <AvaloniaVersion>11.1.1</AvaloniaVersion>
   </PropertyGroup>
 </Project>
